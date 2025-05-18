@@ -97,28 +97,41 @@ include 'includes/header.php';
     </div>
 </div>
 
+<?php include 'includes/footer.php'; ?>
+
 <script>
 $(document).ready(function() {
-    // Delete confirmation
-    $('.delete-btn').click(function(e) {
+    // Cek apakah DataTable sudah diinisialisasi
+    if (!$.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
+            },
+            columnDefs: [
+                { orderable: false, targets: [7] } // Disable sorting for action column
+            ]
+        });
+    }
+
+    // Delete confirmation dengan SweetAlert
+    $(document).on('click', '.delete-btn', function(e) {
         e.preventDefault();
         var itemId = $(this).data('id');
         
-        if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
-            window.location.href = 'delete_item.php?id=' + itemId;
-        }
-    });
-    
-    // Initialize DataTable
-    $('#dataTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
-        },
-        columnDefs: [
-            { orderable: false, targets: [7] } // Disable sorting for action column
-        ]
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda tidak dapat mengembalikan data yang telah dihapus!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'actions/delete_item.php?id=' + itemId;
+            }
+        });
     });
 });
 </script>
-
-<?php include 'includes/footer.php'; ?>
