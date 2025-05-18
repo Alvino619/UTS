@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Jika file atau direktori ada, gunakan secara langsung
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Redirect dari URL dengan .php ke tanpa .php
+    RewriteCond %{THE_REQUEST} \s/+([^?]+)\.php[\s?] [NC]
+    RewriteRule ^ /%1 [R=301,L]
+    
+    # Tangani URL tanpa .php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^([^/]+)/?$ $1.php [L]
+</IfModule>
